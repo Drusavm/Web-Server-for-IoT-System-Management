@@ -21,7 +21,7 @@ A web server solution built on the ESP32 platform to monitor and control IoT dev
 - Required modules (e.g., for potentiometer, LED)
 
 
-## Project Structure
+📁 ## Project Structure
 
 - src — Source code files for the ESP32 web server.
 - data — HTML, CSS, and JavaScript files for the web interface.
