@@ -2,7 +2,7 @@
 
 
 
-A web server solution built on the ESP32 platform to monitor and control IoT devices within a smart home or industrial IoT environment.​
+A web server built on the ESP32 platform to monitor and control IoT devices within a smart home or industrial IoT environment.​
 
 
 ## Installation
