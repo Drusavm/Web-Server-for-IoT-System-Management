@@ -15,17 +15,17 @@ A web server solution built on the ESP32 platform to monitor and control IoT dev
 
 ## Prerequisites
 
-ESP32 development board
-Arduino IDE or PlatformIO
-ESP32 board support package installed (e.g., for Esp32, Arduino esp32 Boards)
-Required modules (e.g., for potentiometer, LED)
+- ESP32 development board
+- Arduino IDE or PlatformIO
+- ESP32 board support package installed (e.g., for Esp32, Arduino esp32 Boards)
+- Required modules (e.g., for potentiometer, LED)
 
 
 ## Project Structure
 
-src — Source code files for the ESP32 web server.
-data — HTML, CSS, and JavaScript files for the web interface.
-docs — Documentation and system architecture diagrams.
-README.md — Project overview and setup instructions.​
+- src — Source code files for the ESP32 web server.
+- data — HTML, CSS, and JavaScript files for the web interface.
+- docs — Documentation and system architecture diagrams.
+- README.md — Project overview and setup instructions.​
 
 
