@@ -3,63 +3,91 @@
 
 
 
-const char* ssid = "Merida";
-const char* password = "Am6569853";
-
 IPAddress local_IP(192, 168, 10, 1);
 IPAddress gateway(192, 168, 10, 1);
 IPAddress subnet(255, 255, 255, 0);
-
 WiFiServer server(80);
 
 const int ledPin = 2;
+const int potPin = 34;
+const String correctUsername = "admin";
+const String correctPassword = "1234";
 
+bool loggedIn = false;
+bool darkMode = false;
+
+unsigned long startTime = 0;
+struct DataPoint {
+  unsigned long time;
+  int value;
+};
+
+#define MAX_DATA_POINTS 50
+DataPoint chartPoints[MAX_DATA_POINTS];
+int chartIndex = 0;
+unsigned long lastUpdate = 0;
 
 void setup() {
   Serial.begin(115200);
-
   pinMode(ledPin, OUTPUT);
   digitalWrite(ledPin, LOW);
 
   WiFi.softAPConfig(local_IP, gateway, subnet);
-
   WiFi.softAP(ssid, password);
 
-  Serial.println("Access Point Started");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.softAPIP());
-
   server.begin();
+  startTime = millis();
 }
 
 void loop() {
-  WiFiClient client = server.available();
+  if (millis() - lastUpdate >= 1000) {
+    lastUpdate = millis();
+    int potValue = analogRead(potPin);
+    unsigned long secondsPassed = (millis() - startTime) / 1000;
+    chartPoints[chartIndex % MAX_DATA_POINTS] = {secondsPassed, potValue};
+    chartIndex++;
+  }
 
+  WiFiClient client = server.available();
   if (client) {
-    Serial.println("Client Connected");
     String request = "";
-    while (client.connected()) {
-      if (client.available()) {
+    unsigned long timeout = millis();
+
+    while (client.connected() && millis() - timeout < 100) {
+      while (client.available()) {
         char c = client.read();
         request += c;
-        if (c == '\n') break;
+        timeout = millis();
       }
     }
 
-    Serial.println(request);
-
-    if (request.indexOf("GET /led/on") != -1) {
-      digitalWrite(ledPin, HIGH);
-    } else if (request.indexOf("GET /led/off") != -1) {
-      digitalWrite(ledPin, LOW);
+    // Parse login POST request
+    if (request.indexOf("POST /login") != -1) {
+      int bodyStart = request.indexOf("\r\n\r\n");
+      if (bodyStart != -1) {
+        String body = request.substring(bodyStart + 4);
+        int usernameStart = body.indexOf("username=") + 9;
+        int usernameEnd = body.indexOf("&", usernameStart);
+        String receivedUsername = body.substring(usernameStart, usernameEnd);
+        int passwordStart = body.indexOf("password=") + 9;
+        String receivedPassword = body.substring(passwordStart);
+        if (receivedUsername == correctUsername && receivedPassword == correctPassword) {
+          loggedIn = true;
+        }
+      }
     }
 
+    // Handle commands
+    if (request.indexOf("GET /led/on") != -1 && loggedIn) digitalWrite(ledPin, HIGH);
+    if (request.indexOf("GET /led/off") != -1 && loggedIn) digitalWrite(ledPin, LOW);
+    if (request.indexOf("GET /logout") != -1) { loggedIn = false; digitalWrite(ledPin, LOW); }
+    if (request.indexOf("GET /dark") != -1 && loggedIn) darkMode = !darkMode;
+
+    // Generate HTML Response
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html");
     client.println();
-    
-
+    client.print(generateHTML());
     client.stop();
-    Serial.println("Client Disconnected");
   }
 }
