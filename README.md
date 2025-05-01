@@ -1,4 +1,4 @@
-# ESP32 Web Server for IoT System Management (Under Development)
+# Building a test web server to manage an IoT system on the ESP32 board
 
 
 
