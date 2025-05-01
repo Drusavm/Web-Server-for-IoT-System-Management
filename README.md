@@ -1,8 +1,8 @@
-# Building a test web server to manage an IoT system on the ESP32 board
+# Building web server to manage an IoT system on the ESP32
 
 
 
-A web server built on the ESP32 platform to monitor and control IoT devices within a smart home or industrial IoT environment.​
+A test web server built on the ESP32 platform to monitor and control IoT devices within a smart home or industrial IoT environment.​
 
 
 ## Installation
